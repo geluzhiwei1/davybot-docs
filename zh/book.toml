@@ -1,0 +1,8 @@
+[book]
+title = "DaweiBot"
+authors = ["dt_2826594996"]
+language = "zh"
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"

@@ -1,0 +1,163 @@
+<style>
+    /* Language Switcher Styles */
+    .language-switcher {
+        display: inline-flex;
+        align-items: center;
+        margin-left: 10px;
+    }
+
+    .language-switcher select {
+        background: transparent;
+        border: none;
+        color: var(--fg);
+        font-size: 16px;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+    }
+
+    .language-switcher select:hover {
+        background-color: var(--sidebar-hover);
+    }
+
+    .language-switcher select:focus {
+        outline: 2px solid var(--sidebar-active);
+        outline-offset: 2px;
+    }
+
+    /* Ensure right-buttons maintains flex layout */
+    .right-buttons {
+        display: flex;
+        align-items: center;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+        .language-switcher select {
+            font-size: 14px;
+            padding: 2px 6px;
+        }
+    }
+</style>
+
+<script>
+    // Create and inject language switcher
+    document.addEventListener('DOMContentLoaded', function() {
+        const rightButtons = document.querySelector('.right-buttons');
+        if (!rightButtons) return;
+
+        // Create language switcher element
+        const langSwitcher = document.createElement('div');
+        langSwitcher.className = 'language-switcher';
+
+        // Create select element
+        const select = document.createElement('select');
+        select.id = 'language-select';
+
+        // Get current language
+        const currentLang = getCurrentLanguage();
+
+        // Add options
+        const optionZh = document.createElement('option');
+        optionZh.value = 'zh';
+        optionZh.textContent = '中文';
+        if (currentLang === 'zh') optionZh.selected = true;
+
+        const optionEn = document.createElement('option');
+        optionEn.value = 'en';
+        optionEn.textContent = 'English';
+        if (currentLang === 'en') optionEn.selected = true;
+
+        select.appendChild(optionZh);
+        select.appendChild(optionEn);
+
+        // Add change listener
+        select.addEventListener('change', function() {
+            switchLanguage(this.value);
+        });
+
+        langSwitcher.appendChild(select);
+        rightButtons.appendChild(langSwitcher);
+    });
+
+    // Get current language from path or default
+    function getCurrentLanguage() {
+        const path = window.location.pathname;
+        // Get relative path after /docs/
+        const docsIndex = path.indexOf('/docs/');
+        let relativePath = docsIndex >= 0 ? path.substring(docsIndex + 6) : path;
+
+        if (relativePath.includes('book-en/')) return 'en';
+        if (relativePath.includes('book-zh/')) return 'zh';
+        if (relativePath.includes('book/')) return 'zh'; // Default is Chinese
+        return 'zh'; // Default to Chinese
+    }
+
+    // Set initial selected value
+    document.addEventListener('DOMContentLoaded', function() {
+        const select = document.getElementById('language-select');
+        const currentLang = getCurrentLanguage();
+        select.value = currentLang;
+    });
+
+    // Switch language function
+    function switchLanguage(lang) {
+        const currentPath = window.location.pathname;
+
+        // Remove trailing slash if present
+        let path = currentPath.endsWith('/') ? currentPath.slice(0, -1) : currentPath;
+
+        // Use the path directly as relative path (works with both /docs/ and direct paths)
+        let relativePath = path;
+
+        // Replace language in path
+        if (lang === 'en') {
+            if (relativePath.includes('/book/')) {
+                // Convert /book/ to /book-en/
+                relativePath = relativePath.replace('/book/', '/book-en/');
+            } else if (relativePath === '/book' || relativePath.endsWith('/book')) {
+                // Convert root /book to /book-en/
+                relativePath = relativePath.replace('/book', '/book-en');
+            } else if (relativePath.includes('/book-zh/')) {
+                // Convert book-zh to book-en
+                relativePath = relativePath.replace('/book-zh/', '/book-en/');
+            } else if (relativePath.includes('/book-en/')) {
+                // Already in book-en, do nothing
+                return;
+            }
+        } else { // zh
+            if (relativePath.includes('/book-en/')) {
+                // Convert /book-en/ to /book/
+                relativePath = relativePath.replace('/book-en/', '/book/');
+            } else if (relativePath === '/book-en' || relativePath.endsWith('/book-en')) {
+                // Convert root /book-en to /book/
+                relativePath = relativePath.replace('/book-en', '/book');
+            } else if (relativePath.includes('/book-zh/')) {
+                // Already in book-zh, do nothing
+                return;
+            } else if (relativePath.includes('/book/')) {
+                // Already in book, do nothing
+                return;
+            }
+        }
+
+        // Add trailing slash if it's a directory path
+        if (!relativePath.includes('.') && !relativePath.endsWith('/')) {
+            relativePath += '/';
+        }
+
+        // Navigate to new path
+        window.location.href = relativePath;
+    }
+
+    // Store language preference when user changes language
+    document.addEventListener('DOMContentLoaded', function() {
+        const select = document.getElementById('language-select');
+        if (select) {
+            select.addEventListener('change', function() {
+                localStorage.setItem('lang-pref', this.value);
+            });
+        }
+    });
+</script>
