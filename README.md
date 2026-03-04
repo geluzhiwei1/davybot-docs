@@ -12,8 +12,7 @@
 ### 本地测试(可选)
 
 ```bash
-python3 -m http.server 8000 --directory deploy
-# 访问 http://localhost:8000/book/
+mdbook serve zh
 ```
 
 ### Nginx 部署
@@ -21,8 +20,6 @@ python3 -m http.server 8000 --directory deploy
 ```bash
 rsync -av deploy/ user@server:/var/www/davybot-docs/
 ```
-
-详细文档: [DEPLOYMENT.md](./DEPLOYMENT.md)
 
 ## 目录结构
 
