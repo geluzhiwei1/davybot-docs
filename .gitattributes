@@ -1,0 +1,17 @@
+# Git LFS configuration for image files
+# PNG images
+*.png filter=lfs diff=lfs merge=lfs -text
+# JPEG images
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+# GIF images
+*.gif filter=lfs diff=lfs merge=lfs -text
+# SVG images (if large)
+*.svg filter=lfs diff=lfs merge=lfs -text
+# WebP images
+*.webp filter=lfs diff=lfs merge=lfs -text
+# Other common image formats
+*.ico filter=lfs diff=lfs merge=lfs -text
+*.bmp filter=lfs diff=lfs merge=lfs -text
+*.tiff filter=lfs diff=lfs merge=lfs -text
+*.tif filter=lfs diff=lfs merge=lfs -text
