@@ -1,5 +1,200 @@
 <style>
-    /* Language Switcher Styles */
+    /* ========================================
+       响应式页面宽度设置
+       ======================================== */
+
+    /* 覆盖 mdBook 默认的 --content-max-width 变量 */
+    :root {
+        --content-max-width: 100%;
+    }
+
+    /* 基础设置 - 移动端优先 */
+    .content {
+        max-width: 100% !important;
+    }
+
+    /* 小屏平板 (≥600px) */
+    @media (min-width: 600px) {
+        .content {
+            max-width: 100% !important;
+        }
+    }
+
+    /* 平板 (≥768px) */
+    @media (min-width: 768px) {
+        .content {
+            max-width: 720px !important;
+        }
+    }
+
+    /* 小型笔记本 (≥992px) */
+    @media (min-width: 992px) {
+        .content {
+            max-width: 880px !important;
+        }
+    }
+
+    /* 桌面 (≥1200px) */
+    @media (min-width: 1200px) {
+        .content {
+            max-width: 1050px !important;
+        }
+    }
+
+    /* 宽屏PC (≥1400px) - 更宽的内容区 */
+    @media (min-width: 1400px) {
+        .content {
+            max-width: 1200px !important;
+        }
+    }
+
+    /* 超宽屏 (≥1600px) - 充分利用宽屏 */
+    @media (min-width: 1600px) {
+        .content {
+            max-width: 1400px !important;
+        }
+    }
+
+    /* 超宽屏 (≥1920px) - 2K屏幕 */
+    @media (min-width: 1920px) {
+        .content {
+            max-width: 1600px !important;
+        }
+    }
+
+    /* 2.5K屏 (≥2560px) */
+    @media (min-width: 2560px) {
+        .content {
+            max-width: 2000px !important;
+        }
+    }
+
+    /* 3K屏 (≥3000px) */
+    @media (min-width: 3000px) {
+        .content {
+            max-width: 2400px !important;
+        }
+    }
+
+    /* 4K屏 (≥3840px) - 充分利用超宽屏 */
+    @media (min-width: 3840px) {
+        .content {
+            max-width: 3000px !important;
+        }
+    }
+
+    /* 优化内容区域 */
+    .page-content {
+        overflow-wrap: break-word; /* 防止长文本溢出 */
+    }
+
+    /* 代码块宽度优化 */
+    pre {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    /* 表格响应式处理 */
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    /* 图片响应式 */
+    .page-content img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* ========================================
+       侧边栏宽度优化
+       ======================================== */
+    .sidebar {
+        width: 280px; /* 默认 250px → 280px */
+    }
+
+    @media (min-width: 1400px) {
+        .sidebar {
+            width: 300px; /* 宽屏增加侧边栏宽度 */
+        }
+    }
+
+    @media (min-width: 1920px) {
+        .sidebar {
+            width: 320px; /* 2K屏幕 */
+        }
+    }
+
+    @media (min-width: 2560px) {
+        .sidebar {
+            width: 360px; /* 2.5K屏幕 */
+        }
+    }
+
+    @media (min-width: 3840px) {
+        .sidebar {
+            width: 400px; /* 4K屏幕 */
+        }
+    }
+
+    /* ========================================
+       内容区域内边距优化
+       ======================================== */
+    .page {
+        padding: 0 15px;
+    }
+
+    @media (min-width: 768px) {
+        .page {
+            padding: 0 25px;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .page {
+            padding: 0 30px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .page {
+            padding: 0 35px;
+        }
+    }
+
+    @media (min-width: 1400px) {
+        .page {
+            padding: 0 40px;
+        }
+    }
+
+    @media (min-width: 1600px) {
+        .page {
+            padding: 0 45px;
+        }
+    }
+
+    @media (min-width: 1920px) {
+        .page {
+            padding: 0 50px;
+        }
+    }
+
+    @media (min-width: 2560px) {
+        .page {
+            padding: 0 60px;
+        }
+    }
+
+    @media (min-width: 3840px) {
+        .page {
+            padding: 0 80px;
+        }
+    }
+
+    /* ========================================
+       Language Switcher Styles
+       ======================================== */
     .language-switcher {
         display: inline-flex;
         align-items: center;
@@ -161,3 +356,158 @@
         }
     });
 </script>
+
+<!-- 图片点击放大功能 -->
+<style>
+    /* 图片放大遮罩层样式 */
+    .image-zoom-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        cursor: zoom-out;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .image-zoom-overlay.active {
+        display: flex;
+        opacity: 1;
+    }
+
+    .image-zoom-overlay img {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+    }
+
+    .image-zoom-overlay.active img {
+        transform: scale(1);
+    }
+
+    /* 内容区域的图片添加悬停效果 */
+    .content img {
+        cursor: zoom-in;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .content img:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* 移动端优化 */
+    @media (max-width: 768px) {
+        .image-zoom-overlay img {
+            max-width: 95%;
+            max-height: 95%;
+        }
+    }
+</style>
+
+<script>
+    // 图片点击放大功能
+    document.addEventListener('DOMContentLoaded', function() {
+        // 创建放大遮罩层
+        const overlay = document.createElement('div');
+        overlay.className = 'image-zoom-overlay';
+        document.body.appendChild(overlay);
+
+        let zoomedImage = null;
+        let originalOverflow = '';
+
+        // 查找所有内容区域的图片
+        const contentImages = document.querySelectorAll('.content img');
+
+        // 为每个图片添加点击事件
+        contentImages.forEach(function(img) {
+            img.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // 显示放大图片
+                showZoomedImage(img.src);
+            });
+        });
+
+        // 显示放大图片
+        function showZoomedImage(src) {
+            // 保存原始滚动条设置
+            originalOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+
+            // 创建放大图片
+            if (!zoomedImage) {
+                zoomedImage = document.createElement('img');
+                overlay.appendChild(zoomedImage);
+            }
+            zoomedImage.src = src;
+
+            // 显示遮罩层
+            overlay.style.display = 'flex';
+            // 强制重绘以触发动画
+            overlay.offsetHeight;
+            overlay.classList.add('active');
+        }
+
+        // 隐藏放大图片
+        function hideZoomedImage() {
+            overlay.classList.remove('active');
+            setTimeout(function() {
+                overlay.style.display = 'none';
+                document.body.style.overflow = originalOverflow;
+            }, 300);
+        }
+
+        // 点击遮罩层关闭
+        overlay.addEventListener('click', function() {
+            hideZoomedImage();
+        });
+
+        // ESC 键关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay.classList.contains('active')) {
+                hideZoomedImage();
+            }
+        });
+
+        // 动态加载的新图片也需要绑定事件
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.addedNodes.length > 0) {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeType === 1) { // 元素节点
+                            const newImages = node.querySelectorAll ? node.querySelectorAll('.content img') : [];
+                            newImages.forEach(function(img) {
+                                img.addEventListener('click', function(e) {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    showZoomedImage(img.src);
+                                });
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        // 观察内容区域的变化
+        const contentArea = document.querySelector('.content');
+        if (contentArea) {
+            observer.observe(contentArea, {
+                childList: true,
+                subtree: true
+            });
+        }
+    });
+</script>
+

@@ -2,7 +2,9 @@
 title = "DaweiBot"
 authors = ["dt_2826594996"]
 language = "zh"
+src = "src"
 
 [output.html]
 default-theme = "light"
 preferred-dark-theme = "navy"
+
