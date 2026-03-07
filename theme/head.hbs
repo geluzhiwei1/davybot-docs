@@ -357,143 +357,190 @@
     });
 </script>
 
-<!-- 图片点击放大功能 -->
+<!-- ========================================
+     FancyBox 4 - 图片浏览器
+     ======================================== -->
+<!-- FancyBox CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
+
+<!-- FancyBox 自定义样式 -->
 <style>
-    /* 图片放大遮罩层样式 */
-    .image-zoom-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.9);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        cursor: zoom-out;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .image-zoom-overlay.active {
-        display: flex;
-        opacity: 1;
-    }
-
-    .image-zoom-overlay img {
-        max-width: 90%;
-        max-height: 90%;
-        object-fit: contain;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        transform: scale(0.9);
-        transition: transform 0.3s ease;
-    }
-
-    .image-zoom-overlay.active img {
-        transform: scale(1);
-    }
-
-    /* 内容区域的图片添加悬停效果 */
-    .content img {
+    /* 图片悬停效果 - 提示可点击 */
+    .content img:not(.no-zoom) {
         cursor: zoom-in;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-radius: 4px;
     }
 
-    .content img:hover {
+    .content img:not(.no-zoom):hover {
         transform: scale(1.02);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
+    /* FancyBox 主题自定义 */
+    .fancybox__container {
+        --fancybox-bg: rgba(0, 0, 0, 0.9);
+        --fancybox-color: #fff;
+        --fancybox-hover-color: #00d4ff;
+    }
+
+    /* 工具栏样式 */
+    .fancybox__toolbar {
+        background: rgba(0, 0, 0, 0.5);
+        padding: 10px;
+    }
+
+    /* 幻灯片导航按钮样式 */
+    .fancybox__nav .fancybox__button::after {
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    .fancybox__nav .fancybox__button:hover::after {
+        background-color: #00d4ff;
+    }
+
+    /* 缩略图样式 */
+    .fancybox__thumbs {
+        background: rgba(0, 0, 0, 0.5);
+    }
+
     /* 移动端优化 */
     @media (max-width: 768px) {
-        .image-zoom-overlay img {
-            max-width: 95%;
-            max-height: 95%;
+        .fancybox__toolbar {
+            padding: 8px;
+        }
+
+        .fancybox__button {
+            padding: 8px;
         }
     }
 </style>
 
+<!-- FancyBox JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+
 <script>
-    // 图片点击放大功能
+    // 初始化 FancyBox
     document.addEventListener('DOMContentLoaded', function() {
-        // 创建放大遮罩层
-        const overlay = document.createElement('div');
-        overlay.className = 'image-zoom-overlay';
-        document.body.appendChild(overlay);
+        // 绑定 FancyBox 到所有内容区域的图片
+        Fancybox.bind('.content img:not(.no-zoom)', {
+            // 幻灯片模式 - 同一页面的图片可以左右切换
+            groupAll: true,
 
-        let zoomedImage = null;
-        let originalOverflow = '';
+            // 工具栏按钮
+            Toolbar: {
+                display: {
+                    left: ['infobar'],
+                    middle: ['zoomIn', 'zoomOut', 'toggle1to1', 'rotateCCW', 'rotateCW', 'flipX', 'flipY'],
+                    right: ['slideshow', 'thumbs', 'close'],
+                },
+            },
 
-        // 查找所有内容区域的图片
-        const contentImages = document.querySelectorAll('.content img');
+            // 幻灯片自动播放
+            slideshow: {
+                autoplay: false,
+                speed: 3000,
+            },
 
-        // 为每个图片添加点击事件
-        contentImages.forEach(function(img) {
-            img.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
+            // 缩略图
+            Thumbs: {
+                type: 'modern',
+            },
 
-                // 显示放大图片
-                showZoomedImage(img.src);
-            });
+            // 动画效果
+            hideScrollbar: false,
+            compact: false,
+
+            // 点击图片背景关闭
+            closeClickOutside: true,
+
+            // 键盘快捷键
+            keyboard: {
+                Escape: 'close',
+                Delete: 'close',
+                Backspace: 'close',
+                PageUp: 'prev',
+                PageDown: 'next',
+                ArrowUp: 'prev',
+                ArrowDown: 'next',
+                ArrowLeft: 'prev',
+                ArrowRight: 'next',
+            },
+
+            // 图片标题
+            caption: function (fancybox, slide) {
+                const caption = slide.caption || '';
+                return caption;
+            },
+
+            // 检测当前语言并应用相应翻译
+            l10n: (function() {
+                // 从路径检测语言
+                const path = window.location.pathname;
+                const isEnglish = path.includes('/book-en/') || path.includes('/en/');
+
+                if (isEnglish) {
+                    // 英文界面
+                    return {
+                        CLOSE: 'Close',
+                        NEXT: 'Next',
+                        PREV: 'Previous',
+                        MODAL: 'Press ESC to close',
+                        ERROR: 'Failed to load, please try again',
+                        IMAGE_ERROR: 'Image failed to load',
+                        TOGGLE_ZOOM: 'Zoom',
+                        TOGGLE_THUMBS: 'Thumbnails',
+                        TOGGLE_SLIDESHOW: 'Slideshow',
+                        TOGGLE_FULLSCREEN: 'Fullscreen',
+                        DOWNLOAD: 'Download',
+                    };
+                } else {
+                    // 中文界面
+                    return {
+                        CLOSE: '关闭',
+                        NEXT: '下一张',
+                        PREV: '上一张',
+                        MODAL: '按 ESC 关闭',
+                        ERROR: '加载失败，请重试',
+                        IMAGE_ERROR: '图片加载失败',
+                        TOGGLE_ZOOM: '缩放',
+                        TOGGLE_THUMBS: '缩略图',
+                        TOGGLE_SLIDESHOW: '幻灯片',
+                        TOGGLE_FULLSCREEN: '全屏',
+                        DOWNLOAD: '下载',
+                    };
+                }
+            })(),
+
+            // 触摸支持
+            dragToClose: true,
+
+            // 图片适应屏幕
+            Images: {
+                initialSize: 'fit',
+            },
+
+            // 全屏选项
+            fullscreen: {
+                autopan: true,
+            },
+
+            // 点击图片切换到下一张
+            click: 'next',
         });
 
-        // 显示放大图片
-        function showZoomedImage(src) {
-            // 保存原始滚动条设置
-            originalOverflow = document.body.style.overflow;
-            document.body.style.overflow = 'hidden';
-
-            // 创建放大图片
-            if (!zoomedImage) {
-                zoomedImage = document.createElement('img');
-                overlay.appendChild(zoomedImage);
-            }
-            zoomedImage.src = src;
-
-            // 显示遮罩层
-            overlay.style.display = 'flex';
-            // 强制重绘以触发动画
-            overlay.offsetHeight;
-            overlay.classList.add('active');
-        }
-
-        // 隐藏放大图片
-        function hideZoomedImage() {
-            overlay.classList.remove('active');
-            setTimeout(function() {
-                overlay.style.display = 'none';
-                document.body.style.overflow = originalOverflow;
-            }, 300);
-        }
-
-        // 点击遮罩层关闭
-        overlay.addEventListener('click', function() {
-            hideZoomedImage();
-        });
-
-        // ESC 键关闭
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && overlay.classList.contains('active')) {
-                hideZoomedImage();
-            }
-        });
-
-        // 动态加载的新图片也需要绑定事件
+        // 动态加载的图片也需要绑定 FancyBox
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.addedNodes.length > 0) {
                     mutation.addedNodes.forEach(function(node) {
                         if (node.nodeType === 1) { // 元素节点
-                            const newImages = node.querySelectorAll ? node.querySelectorAll('.content img') : [];
-                            newImages.forEach(function(img) {
-                                img.addEventListener('click', function(e) {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    showZoomedImage(img.src);
+                            const newImages = node.querySelectorAll ? node.querySelectorAll('.content img:not(.no-zoom)') : [];
+                            if (newImages.length > 0) {
+                                Fancybox.bind(newImages, {
+                                    groupAll: true,
                                 });
-                            });
+                            }
                         }
                     });
                 }
@@ -510,4 +557,5 @@
         }
     });
 </script>
+<!-- End FancyBox 4 -->
 
